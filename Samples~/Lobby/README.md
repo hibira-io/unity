@@ -12,7 +12,19 @@ and start, drawn with IMGUI so there is no scene to set up.
    start it with `npm run dev` and keep the default `http://localhost:3000`.
 4. Press **Play**, make a room, and join it from a browser at
    `http://localhost:3000/?room=CODE`. Unity and browser players share the
-   room.
+   room. For another browser player, use a different browser or a private
+   window: tabs in one browser are the same player.
+
+Unity 2022 and later block plain HTTP by default, so the auth request to
+`http://localhost:3000` fails with "Insecure connection not allowed". While
+testing, set **Player Settings → Other Settings → Allow downloads over HTTP**
+to **Allowed in Development Builds**, and serve your real auth endpoint over
+HTTPS.
+
+Browsers connect only from the app's **Allowed origins**, so add
+`http://localhost:3000` there; the Free plan needs each origin listed rather
+than `*`. The Unity Editor and native builds send no origin and aren't
+affected.
 
 The sample sends the player's id and name to the auth endpoint as form
 fields, as nextjs-lobby expects. A real game sends its own session instead
