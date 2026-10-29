@@ -1,0 +1,38 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  csharp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Protocol and room tests
+        run: dotnet run --project "Tests~/Hibira.Tests"
+      - name: Compile against Unity's assemblies (Editor)
+        run: dotnet build "Tests~/UnityCompile"
+      - name: Compile against Unity's assemblies (WebGL player)
+        run: dotnet build "Tests~/UnityCompile" -p:WebGL=true
+      - name: Every asset has a .meta
+        run: python3 "Tests~/check-meta.py"
+
+  webgl:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Tests~/webgl
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm test

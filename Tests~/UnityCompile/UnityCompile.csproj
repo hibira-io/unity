@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Compiles Runtime/ and the sample the way Unity would (UNITY_* defines,
+       UnityEngine reference assemblies), to catch Unity API mistakes without
+       a Unity install. Build with -p:WebGL=true for the WebGL player. -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DefineConstants>UNITY_5_3_OR_NEWER;UNITY_2021_3_OR_NEWER</DefineConstants>
+    <DefineConstants Condition="'$(WebGL)' == 'true'">$(DefineConstants);UNITY_WEBGL</DefineConstants>
+    <DefineConstants Condition="'$(WebGL)' != 'true'">$(DefineConstants);UNITY_EDITOR</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Runtime/**/*.cs" />
+    <Compile Include="../../Samples~/**/*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" PrivateAssets="all" />
+  </ItemGroup>
+</Project>
