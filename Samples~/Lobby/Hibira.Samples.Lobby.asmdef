@@ -1,0 +1,6 @@
+{
+    "name": "Hibira.Samples.Lobby",
+    "rootNamespace": "Hibira.Samples",
+    "references": ["Hibira.Realtime"],
+    "autoReferenced": false
+}

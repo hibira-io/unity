@@ -1,0 +1,14 @@
+{
+  "name": "hibira-unity-e2e",
+  "private": true,
+  "type": "module",
+  "description": "Plays a lobby round between the C# client and @hibira-io/lobby on a real server.",
+  "scripts": {
+    "test": "node e2e.mjs"
+  },
+  "dependencies": {
+    "@hibira-io/lobby": "^0.1.0",
+    "pusher": "^5.2.0",
+    "pusher-js": "^8.4.0"
+  }
+}

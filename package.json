@@ -1,0 +1,27 @@
+{
+  "name": "io.hibira.realtime",
+  "version": "0.1.0",
+  "displayName": "Hibira Realtime",
+  "description": "Realtime WebSocket channels for Unity on Hibira and other Pusher-compatible servers: public, private and presence channels, client events, and game rooms (seats, host, ready, chat) that share rooms with @hibira-io/lobby browser players. Works in WebGL builds.",
+  "unity": "2021.3",
+  "license": "MIT",
+  "keywords": ["hibira", "pusher", "websocket", "realtime", "multiplayer", "lobby", "webgl"],
+  "author": {
+    "name": "Hibira",
+    "url": "https://hibira.io"
+  },
+  "documentationUrl": "https://github.com/hibira-io/unity#readme",
+  "changelogUrl": "https://github.com/hibira-io/unity/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/hibira-io/unity/blob/main/LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hibira-io/unity.git"
+  },
+  "samples": [
+    {
+      "displayName": "Lobby",
+      "description": "A room with seats, ready flags, chat and start, drawn with IMGUI. Drop LobbySample on an empty GameObject.",
+      "path": "Samples~/Lobby"
+    }
+  ]
+}

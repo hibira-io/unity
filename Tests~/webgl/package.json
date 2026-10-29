@@ -1,0 +1,12 @@
+{
+  "name": "hibira-unity-webgl-test",
+  "private": true,
+  "type": "module",
+  "description": "Tests the WebGL jslib with stand-ins for Emscripten's helpers.",
+  "scripts": {
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "ws": "^8.18.0"
+  }
+}
