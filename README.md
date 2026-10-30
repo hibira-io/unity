@@ -219,7 +219,8 @@ user sign-in (`pusher:signin`).
 ## Limits
 
 Hibira's limits apply as for any client: client events are limited to 10 per
-second per connection and 10 KB each, and presence channels hold up to 100
+second per connection, an event's data to 4 KB on the Free plan (10 KB on
+Hobby and Starter, more on higher plans), and presence channels hold up to 100
 members.
 
 ## Development
