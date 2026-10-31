@@ -1,6 +1,6 @@
 {
   "name": "io.hibira.realtime",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "displayName": "Hibira Realtime",
   "description": "Realtime WebSocket channels for Unity on Hibira and other Pusher-compatible servers: public, private and presence channels, client events, game rooms (seats, host, ready, chat) and a matchmaking queue, shared with @hibira-io/lobby browser players. Works in WebGL builds.",
   "unity": "2021.3",

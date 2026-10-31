@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- README: cover image and screenshots.
+
 ## 0.2.0
 
 - `HibiraQueue`: a matchmaking queue on a presence channel, compatible with
