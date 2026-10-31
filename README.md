@@ -1,5 +1,7 @@
 # Hibira Realtime for Unity
 
+![Hibira Realtime for Unity](.github/cover.jpg)
+
 [![ci](https://github.com/hibira-io/unity/actions/workflows/ci.yml/badge.svg)](https://github.com/hibira-io/unity/actions/workflows/ci.yml)
 
 A Pusher Channels protocol client for Unity, in plain C#, for
