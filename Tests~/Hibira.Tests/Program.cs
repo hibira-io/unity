@@ -46,6 +46,7 @@ namespace Hibira.Tests
         static async Task<int> Main(string[] args)
         {
             if (args.Length > 0 && args[0] == "e2e") return await EndToEnd.Run();
+            if (args.Length > 0 && args[0] == "e2e-queue") return await EndToEndQueue.Run();
             var filter = args.Length > 0 ? args[0] : null;
             var tests = typeof(Program).Assembly.GetTypes()
                 .SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))

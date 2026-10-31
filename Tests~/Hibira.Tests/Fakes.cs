@@ -87,7 +87,7 @@ namespace Hibira.Tests
         int _nextSocket;
         long _joinClock = 1_700_000_000_000;
 
-        public HibiraClient NewClient(string userId, string name)
+        public HibiraClient NewClient(string userId, string name, Dictionary<string, object> extraInfo = null)
         {
             HibiraClient client = null;
             client = new HibiraClient(new HibiraOptions
@@ -97,11 +97,10 @@ namespace Hibira.Tests
                 TransportFactory = () => new FakeTransport { Server = this },
                 Authorizer = (socketId, channel) =>
                 {
-                    var channelData = Json.Serialize(new Dictionary<string, object>
-                    {
-                        ["user_id"] = userId,
-                        ["user_info"] = new Dictionary<string, object> { ["name"] = name, ["joined_at"] = ++_joinClock },
-                    });
+                    var userInfo = new Dictionary<string, object> { ["name"] = name, ["joined_at"] = ++_joinClock };
+                    if (extraInfo != null && channel.StartsWith("presence-queue-"))
+                        foreach (var kv in extraInfo) userInfo[kv.Key] = kv.Value;
+                    var channelData = Json.Serialize(new Dictionary<string, object> { ["user_id"] = userId, ["user_info"] = userInfo });
                     return Task.FromResult(new HibiraAuth("key:sig", channelData));
                 },
             });
