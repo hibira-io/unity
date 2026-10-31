@@ -65,7 +65,7 @@ namespace Hibira.Tests
         {
             var h = new Harness();
             h.Client.Connect();
-            Assert.Equal("wss://ws.hibira.io/app/app%20key?protocol=7&client=unity&version=0.1.0", h.Socket.Url);
+            Assert.Equal("wss://ws.hibira.io/app/app%20key?protocol=7&client=unity&version=0.2.0", h.Socket.Url);
             Assert.Equal(HibiraConnectionState.Connecting, h.Client.State);
 
             var local = new Harness(o =>
@@ -75,7 +75,7 @@ namespace Hibira.Tests
                 o.UseTls = false;
             });
             local.Client.Connect();
-            Assert.Equal("ws://127.0.0.1:6001/app/app%20key?protocol=7&client=unity&version=0.1.0", local.Socket.Url);
+            Assert.Equal("ws://127.0.0.1:6001/app/app%20key?protocol=7&client=unity&version=0.2.0", local.Socket.Url);
         }
 
         [Test]

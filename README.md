@@ -18,6 +18,9 @@ the browser's WebSocket through a small `.jslib`.
   [@hibira-io/lobby](https://github.com/hibira-io/lobby-js) and the
   [Godot addon](https://github.com/hibira-io/godot), so Unity, Godot and
   browser players can share a room.
+- `HibiraQueue`: a matchmaking queue that matches players by rating and
+  criteria, gives up after a timeout, and moves the match into a new room.
+  Unity and `@hibira-io/lobby` 0.2 players can wait in the same queue.
 - No dependencies on other packages
 
 Requires Unity 2021.3 or later.
@@ -31,13 +34,13 @@ package from git URL…**, and enter:
 https://github.com/hibira-io/unity.git
 ```
 
-To pin a version, add the tag: `https://github.com/hibira-io/unity.git#v0.1.0`.
+To pin a version, add the tag: `https://github.com/hibira-io/unity.git#v0.2.0`.
 Or add it to `Packages/manifest.json` yourself:
 
 ```json
 {
   "dependencies": {
-    "io.hibira.realtime": "https://github.com/hibira-io/unity.git#v0.1.0"
+    "io.hibira.realtime": "https://github.com/hibira-io/unity.git#v0.2.0"
   }
 }
 ```
@@ -176,6 +179,46 @@ capacity race) are the same as in
 [@hibira-io/lobby](https://github.com/hibira-io/lobby-js#readme). Game events
 of your own go on the same channel: `room.Channel.Trigger("client-move", …)`.
 
+## Matchmaking
+
+Instead of a room browser, players can wait in a queue. When enough players
+fit together, they all leave the queue and land in a new room.
+
+```csharp
+var queue = HibiraQueue.Join(hibira, "presence-queue-duo", new HibiraQueueOptions
+{
+    Size = 2,          // players per match
+    RatingRange = 100, // rating difference allowed at first...
+    WidenBy = 50,      // ...plus 50 for every 5 s of waiting
+    WidenEvery = 5,
+    MaxRange = 400,
+    Timeout = 60,      // seconds before giving up
+});
+queue.Updated += (position, count) => ShowWaiting(position, count);
+queue.Matched += match =>
+{
+    // match.Room is a HibiraRoom on presence-match-<random id>, already joining
+    match.Room.Joined += (players, host) => GoToRoomScreen(match.Room);
+};
+queue.TimedOut += waited => ShowNoMatch();
+
+cancelButton.onClick.AddListener(queue.Leave);
+```
+
+There is no matchmaking server. The queue is a presence channel, and your auth
+endpoint signs each player's `joined_at`, `rating` and `criteria` into
+`user_info` (`authorizeQueue()` in `@hibira-io/lobby/server`), so players
+cannot change their rating. The player who has waited longest hosts the
+queue: it runs `HibiraMatch.FindMatches` and announces matches with
+`client-queue-match`. The rules match `findMatches()` in
+`@hibira-io/lobby`, so it makes no difference whether a Unity or a browser
+player is hosting. Options and limits are in the
+[lobby-js README](https://github.com/hibira-io/lobby-js#matchmaking-queue);
+times here are in seconds.
+
+Coming from Photon PUN 2? See
+[Moving from Photon PUN 2](Documentation~/moving-from-photon-pun-2.md).
+
 ## WebGL
 
 WebGL builds use the browser's WebSocket and `fetch` (through
@@ -213,6 +256,12 @@ client once a frame. To tick a client yourself (in a test, say), set
 and the events `Subscribed`, `SubscriptionError`, `EventReceived`,
 `MemberAdded`, `MemberRemoved`, `CountChanged`.
 
+`HibiraQueue`: `Join(client, channel, options)`, `Leave()`, `Status`,
+`Position`, `Count`, `Tickets`, `Waited`, `Range`, `IsHost`, `Match`, and the
+events `Joined`, `Updated`, `Matched`, `TimedOut`, `JoinFailed`.
+`HibiraMatch`: `FindMatches(tickets, rules, nowMs)`, `AllowedRange`,
+`CriteriaFit`.
+
 Not supported yet: end-to-end encrypted channels (`private-encrypted-`) and
 user sign-in (`pusher:signin`).
 
@@ -242,6 +291,8 @@ player on a real server with client events turned on:
 ```sh
 cd Tests~/e2e && npm ci
 E2E_HOST=127.0.0.1 E2E_PORT=6001 E2E_TLS=0 E2E_APP_ID=... E2E_KEY=... E2E_SECRET=... npm test
+# matchmaking: the C# queue hosts and matches a lobby-js player by rating
+E2E_HOST=127.0.0.1 E2E_PORT=6001 E2E_TLS=0 E2E_APP_ID=... E2E_KEY=... E2E_SECRET=... npm run test:queue
 ```
 
 ## License

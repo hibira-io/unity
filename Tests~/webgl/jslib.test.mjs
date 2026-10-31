@@ -154,7 +154,7 @@ test('speaks Pusher with a real server', { skip: !key && 'set E2E_KEY' }, async 
   const host = process.env.E2E_HOST ?? '127.0.0.1';
   const port = process.env.E2E_PORT ?? '6001';
   const ws = loadLibrary();
-  const id = ws.open(`ws://${host}:${port}/app/${key}?protocol=7&client=unity&version=0.1.0`);
+  const id = ws.open(`ws://${host}:${port}/app/${key}?protocol=7&client=unity&version=0.2.0`);
   assert.equal(await next(ws, id), 'o');
   const established = JSON.parse((await next(ws, id)).slice(1));
   assert.equal(established.event, 'pusher:connection_established');
