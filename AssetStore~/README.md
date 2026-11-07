@@ -11,15 +11,48 @@ up in a project that installs the package.
 
 ## Submitting
 
-1. Make a new, empty Unity **2021.3 LTS** project (the lowest version the
-   package supports, so the listing covers 2021.3 and later).
+The Asset Store only accepts uploads made from Unity **2022.3 or newer**. The
+package itself still supports 2021.3, so list that as the lowest version.
+
+1. Make a new, empty Unity 2022.3 project (on Apple silicon, install Rosetta
+   first: `softwareupdate --install-rosetta`; the 2022.3 Package Manager is an
+   Intel binary).
 2. Run `AssetStore~/export.sh /path/to/that/project` from this repository.
 3. Open the project and check the Console shows no compile errors.
-4. Install **Asset Store Publishing Tools** from the Package Manager
-   (Unity Registry). Open **Tools → Asset Store → Uploader**, sign in, pick the
-   draft package, choose `Assets/Hibira`, run the validator, and upload.
-5. In the [Publisher Portal](https://publisher.unity.com/packages), fill in the
+4. Install **Asset Store Publishing Tools**: "Add to My Assets" on its Asset
+   Store page, then Package Manager → My Assets → Download → Import. It is not
+   in the Unity Registry. (The git URL from Unity's GitHub repo also works, but
+   its icons are in Git LFS, so without `git lfs` the Validator window breaks.)
+5. Open **Tools → Asset Store → Uploader**, sign in, pick the draft package,
+   choose `Assets/Hibira`, run the validator, and upload.
+6. In the [Publisher Portal](https://publisher.unity.com/packages), fill in the
    draft with the text and images below, set the price to Free, and submit.
+   The publisher profile needs a Website (https://hibira.io) or the submit is
+   refused.
+
+## Later releases
+
+`.github/workflows/asset-store.yml` builds the upload in Unity 2022.3 on every
+`v*` tag (it fails if anything in `Assets/Hibira` doesn't compile) and attaches
+`Hibira-Realtime-<version>.unitypackage` to the GitHub release. Then:
+
+1. In any Unity 2022.3 project with Asset Store Publishing Tools, open
+   **Tools → Asset Store → Uploader**, pick the package, choose
+   **From .unitypackage**, select the file from the release, validate and upload.
+2. Submit in the Publisher Portal. Unity reviews every version by hand.
+
+Uploading itself stays manual: Asset Store Publishing Tools has no public API
+for it, only the Editor window.
+
+The workflow needs three repository secrets, set once (Settings → Secrets and
+variables → Actions):
+
+- `UNITY_EMAIL` and `UNITY_PASSWORD`: the Unity account that holds the license.
+- `UNITY_LICENSE`: the contents of the license file for that account. Follow
+  GameCI's [activation guide](https://game.ci/docs/github/activation) for a
+  Personal license.
+
+Without them the workflow skips the build with a warning instead of failing.
 
 The Asset Store also offers "hybrid" (UPM-format) uploads, but that support is
 still marked experimental, so this kit uses the classic `Assets/` layout.

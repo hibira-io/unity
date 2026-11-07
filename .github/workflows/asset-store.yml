@@ -1,0 +1,67 @@
+name: asset-store
+# Builds the Asset Store upload (Assets/Hibira as a .unitypackage) in a real
+# Unity Editor. On a v* tag it attaches the file to that GitHub release, so a
+# release only needs Uploader > Upload and Submit in the Publisher Portal.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  # The Asset Store only accepts uploads made from 2022.3 or newer.
+  UNITY_VERSION: 2022.3.62f3
+  PROJECT: AssetStoreProject
+
+jobs:
+  unitypackage:
+    runs-on: ubuntu-latest
+    env:
+      HAS_LICENSE: ${{ secrets.UNITY_LICENSE != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Unity license
+        if: env.HAS_LICENSE != 'true'
+        run: |
+          echo "::warning::UNITY_LICENSE, UNITY_EMAIL and UNITY_PASSWORD secrets are not set, so the Unity build is skipped. See AssetStore~/README.md."
+
+      - name: Make the upload project
+        if: env.HAS_LICENSE == 'true'
+        run: |
+          mkdir -p "$PROJECT/Assets" "$PROJECT/ProjectSettings"
+          cp -R "AssetStore~/ci/." "$PROJECT/"
+          echo "m_EditorVersion: $UNITY_VERSION" > "$PROJECT/ProjectSettings/ProjectVersion.txt"
+          "AssetStore~/export.sh" "$PROJECT"
+          version=$(python3 -c "import json; print(json.load(open('package.json'))['version'])")
+          echo "PACKAGE_FILE=Hibira-Realtime-$version.unitypackage" >> "$GITHUB_ENV"
+
+      - name: Export Assets/Hibira
+        if: env.HAS_LICENSE == 'true'
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: ${{ env.PROJECT }}
+          unityVersion: ${{ env.UNITY_VERSION }}
+          targetPlatform: StandaloneLinux64
+          buildMethod: HibiraAssetStoreExport.Export
+          customParameters: -hibiraOutput build/${{ env.PACKAGE_FILE }}
+
+      - name: Keep the package
+        if: env.HAS_LICENSE == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: unitypackage
+          path: ${{ env.PROJECT }}/build/${{ env.PACKAGE_FILE }}
+          if-no-files-found: error
+
+      - name: Attach to the release
+        if: env.HAS_LICENSE == 'true' && startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.PROJECT }}/build/${{ env.PACKAGE_FILE }}
