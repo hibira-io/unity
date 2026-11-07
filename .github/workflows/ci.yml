@@ -23,6 +23,8 @@ jobs:
         run: dotnet build "Tests~/UnityCompile" -p:WebGL=true
       - name: Every asset has a .meta
         run: python3 "Tests~/check-meta.py"
+      - name: Asset Store .unitypackage builds
+        run: python3 "AssetStore~/build.py"
 
   webgl:
     runs-on: ubuntu-latest

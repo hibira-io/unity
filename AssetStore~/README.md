@@ -4,6 +4,8 @@ Everything needed to list **Hibira Realtime** on the Unity Asset Store as a
 free package. Folders ending in `~` are skipped by Unity, so none of this ends
 up in a project that installs the package.
 
+- `build.py`: builds `Hibira-Realtime-<version>.unitypackage` without Unity
+  (CI runs it on every tag, see below).
 - `export.sh`: copies the package into a Unity project's `Assets/Hibira/Realtime`
   folder in the classic Asset Store layout (Runtime, Samples, Documentation).
 - `images/`: key images and screenshots at the sizes the Publisher Portal asks for.
@@ -32,27 +34,27 @@ package itself still supports 2021.3, so list that as the lowest version.
 
 ## Later releases
 
-`.github/workflows/asset-store.yml` builds the upload in Unity 2022.3 on every
-`v*` tag (it fails if anything in `Assets/Hibira` doesn't compile) and attaches
-`Hibira-Realtime-<version>.unitypackage` to the GitHub release. Then:
+`.github/workflows/asset-store.yml` runs `AssetStore~/build.py` on every `v*`
+tag and attaches `Hibira-Realtime-<version>.unitypackage` to the GitHub
+release. The script writes the package directly (a `.unitypackage` is a gzipped
+tar), so CI needs no Unity Editor, license or secrets. Compile checks against
+Unity's assemblies already run in `ci.yml`.
+
+GUIDs stay the same from release to release: files under `Runtime` keep their
+checked-in `.meta`, and the rest get a GUID derived from their path, so an
+update replaces files in a project instead of duplicating them. `export.sh`
+uses the same script, so both routes give the same GUIDs.
+
+For each release:
 
 1. In any Unity 2022.3 project with Asset Store Publishing Tools, open
    **Tools → Asset Store → Uploader**, pick the package, choose
-   **From .unitypackage**, select the file from the release, validate and upload.
+   **From .unitypackage**, select the file from the GitHub release, validate
+   and upload.
 2. Submit in the Publisher Portal. Unity reviews every version by hand.
 
 Uploading itself stays manual: Asset Store Publishing Tools has no public API
 for it, only the Editor window.
-
-The workflow needs three repository secrets, set once (Settings → Secrets and
-variables → Actions):
-
-- `UNITY_EMAIL` and `UNITY_PASSWORD`: the Unity account that holds the license.
-- `UNITY_LICENSE`: the contents of the license file for that account. Follow
-  GameCI's [activation guide](https://game.ci/docs/github/activation) for a
-  Personal license.
-
-Without them the workflow skips the build with a warning instead of failing.
 
 The Asset Store also offers "hybrid" (UPM-format) uploads, but that support is
 still marked experimental, so this kit uses the classic `Assets/` layout.
@@ -128,4 +130,4 @@ If the package is already installed from git through the Package Manager, remove
 
 ## 中文摘要
 
-這裡是把 Hibira Realtime 上架 Unity Asset Store（免費）所需的全部材料：`export.sh` 把套件複製成 Asset Store 要求的 `Assets/Hibira/Realtime` 結構；`images/` 有 icon、card、cover、social 圖與三張截圖，尺寸都符合 Publisher Portal 的要求；上方是可直接貼上的英文上架文案。流程：開一個 Unity 2021.3 LTS 空專案，執行 `export.sh`，在 Editor 用 Asset Store Publishing Tools 上傳 `Assets/Hibira`，再到 Publisher Portal 填文案、上傳圖片並送審。上傳與送審需要在 Unity Editor 與 Publisher Portal 登入，只能由帳號擁有者操作。
+這裡是把 Hibira Realtime 上架 Unity Asset Store（免費）所需的全部材料：`export.sh` 把套件複製成 Asset Store 要求的 `Assets/Hibira/Realtime` 結構；`images/` 有 icon、card、cover、social 圖與三張截圖，尺寸都符合 Publisher Portal 的要求；上方是可直接貼上的英文上架文案。上傳需要 Unity 2022.3 以上（套件本身仍支援 2021.3）。之後每次打 `v*` tag，CI 會用 `build.py` 直接產生 `.unitypackage` 並附到 GitHub Release，不需要 Unity 授權；只要在 Uploader 選 From .unitypackage 上傳，再到 Publisher Portal 送審。首次流程：開一個 Unity 2022.3 空專案，執行 `export.sh`，在 Editor 用 Asset Store Publishing Tools 上傳 `Assets/Hibira`，再到 Publisher Portal 填文案、上傳圖片並送審。上傳與送審需要在 Unity Editor 與 Publisher Portal 登入，只能由帳號擁有者操作。

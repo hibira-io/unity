@@ -3,3 +3,4 @@ bin/
 obj/
 *.meta.tmp
 .DS_Store
+dist/
