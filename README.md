@@ -221,6 +221,34 @@ times here are in seconds.
 Coming from Photon PUN 2? See
 [Moving from Photon PUN 2](Documentation~/moving-from-photon-pun-2.md).
 
+## Auction house
+
+`HibiraAuctionHouse` follows an auction house run by
+[`@hibira-io/auction`](https://github.com/hibira-io/auction-js) on your Node
+server, so Unity and browser players trade in the same house. Listings,
+bids, extensions and sales arrive live; the countdown follows the server's
+clock.
+
+```csharp
+var house = HibiraAuctionHouse.Open(hibira, "main", "https://api.your-game.example/auction");
+house.Changed += () => DrawListings(house.Listings);
+house.Updated += (kind, listing) =>
+{
+    if (kind == "sold" && listing.BidderId == myId) ShowWon(listing.Item["type"]);
+};
+
+void Update()
+{
+    foreach (var l in house.Listings) SetTimer(l.Id, house.TimeLeft(l)); // seconds
+}
+```
+
+The URL is your server's `GET` returning `house.snapshot()`; it loads on
+every subscription, including after a reconnect. Bids never go over the
+socket: POST them to your own server, which checks them with `house.bid()`
+and publishes the result to everyone. `listing.MinBid` is the next lowest
+bid, and `house.Prices(type)` the recent sale prices of an item type.
+
 ## WebGL
 
 WebGL builds use the browser's WebSocket and `fetch` (through
@@ -263,6 +291,12 @@ and the events `Subscribed`, `SubscriptionError`, `EventReceived`,
 events `Joined`, `Updated`, `Matched`, `TimedOut`, `JoinFailed`.
 `HibiraMatch`: `FindMatches(tickets, rules, nowMs)`, `AllowedRange`,
 `CriteriaFit`.
+
+`HibiraAuctionHouse`: `Open(client, house, snapshotUrl)` (or a `load`
+function), `Listings`, `Closed`, `Get(id)`, `TimeLeft(listing)`,
+`Prices(type)`, `NowMs()`, `Reload()`, `Close()`, and the events `Ready`,
+`Changed`, `Updated(kind, listing)`, `Failed`. `HibiraListing` carries the
+listing's fields (`Price`, `MinBid`, `Buyout`, `EndsAt`, `Status`, `Item`, …).
 
 Not supported yet: end-to-end encrypted channels (`private-encrypted-`) and
 user sign-in (`pusher:signin`).

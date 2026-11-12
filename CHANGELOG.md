@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0
+
+- `HibiraAuctionHouse`: follows an auction house published by
+  `@hibira-io/auction` (`createAuctionHouse()` on a Node server), so Unity and
+  browser players share it: open listings, recent sales, countdowns on the
+  server's clock, sale prices per item type, and a fresh snapshot on every
+  subscription. Bids go to your server.
+
 ## 0.2.1
 
 - README: cover image and screenshots.

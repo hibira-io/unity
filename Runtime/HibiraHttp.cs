@@ -27,6 +27,31 @@ namespace Hibira
             return sb.ToString();
         }
 
+        /// <summary>A GET that expects JSON, e.g. an auction house snapshot.</summary>
+        public static Task<Response> Get(string url, IDictionary<string, string> headers = null)
+        {
+            var tcs = new TaskCompletionSource<Response>();
+#if UNITY_5_3_OR_NEWER
+            var request = UnityEngine.Networking.UnityWebRequest.Get(url);
+            request.SetRequestHeader("Accept", "application/json");
+            if (headers != null) foreach (var kv in headers) request.SetRequestHeader(kv.Key, kv.Value);
+            request.SendWebRequest().completed += _ =>
+            {
+                var status = (int)request.responseCode;
+                tcs.SetResult(new Response
+                {
+                    Status = status,
+                    Body = request.downloadHandler?.text ?? "",
+                    Error = status == 0 ? request.error ?? "no response" : null,
+                });
+                request.Dispose();
+            };
+#else
+            _ = SendGet(url, headers, tcs);
+#endif
+            return tcs.Task;
+        }
+
         public static Task<Response> PostForm(string url, IDictionary<string, string> headers, string form)
         {
             var tcs = new TaskCompletionSource<Response>();
@@ -69,6 +94,22 @@ namespace Hibira
                 };
                 request.Headers.TryAddWithoutValidation("Accept", "application/json");
                 foreach (var kv in headers) request.Headers.TryAddWithoutValidation(kv.Key, kv.Value);
+                var response = await Client.SendAsync(request).ConfigureAwait(false);
+                tcs.SetResult(new Response { Status = (int)response.StatusCode, Body = await response.Content.ReadAsStringAsync().ConfigureAwait(false) });
+            }
+            catch (Exception e)
+            {
+                tcs.SetResult(new Response { Status = 0, Body = "", Error = e.Message });
+            }
+        }
+
+        static async Task SendGet(string url, IDictionary<string, string> headers, TaskCompletionSource<Response> tcs)
+        {
+            try
+            {
+                var request = new System.Net.Http.HttpRequestMessage(System.Net.Http.HttpMethod.Get, url);
+                request.Headers.TryAddWithoutValidation("Accept", "application/json");
+                if (headers != null) foreach (var kv in headers) request.Headers.TryAddWithoutValidation(kv.Key, kv.Value);
                 var response = await Client.SendAsync(request).ConfigureAwait(false);
                 tcs.SetResult(new Response { Status = (int)response.StatusCode, Body = await response.Content.ReadAsStringAsync().ConfigureAwait(false) });
             }
