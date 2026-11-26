@@ -7,7 +7,13 @@
 
 Both outputs use the classic Asset Store layout:
 
-  Assets/Hibira/Realtime/{Runtime,Samples/Lobby,Documentation,CHANGELOG.md,LICENSE}
+  Assets/Hibira/Realtime/{Runtime,Samples/Lobby,Documentation,CHANGELOG.md,Third-Party Notices.txt}
+
+The MIT LICENSE stays out of the Asset Store copy, which the Asset Store EULA
+covers; Third-Party Notices.txt says the same source is MIT on GitHub. The
+README copied into Documentation drops its image lines (the cover and the CI
+badge), which point at files that are not in the package, and its License
+section names the EULA instead of linking the LICENSE file.
 
 Files that already have a .meta in this repository (everything under Runtime)
 keep it. The rest (samples, docs, changelog, licence, and the folders above
@@ -31,6 +37,12 @@ import tarfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PREFIX = "Assets/Hibira/Realtime"
+NOTICES = "Third-Party Notices.txt"
+ASSET_STORE_LICENSE = (
+    "This copy is licensed under the Unity Asset Store EULA. The same source is also "
+    "published under the MIT License at https://github.com/hibira-io/unity. "
+    "See Third-Party Notices.txt."
+)
 
 
 def load_templates():
@@ -63,7 +75,22 @@ def sources():
             yield os.path.join(ROOT, "Documentation~", f), PREFIX + "/Documentation/" + f
     yield os.path.join(ROOT, "README.md"), PREFIX + "/Documentation/README.md"
     yield os.path.join(ROOT, "CHANGELOG.md"), PREFIX + "/CHANGELOG.md"
-    yield os.path.join(ROOT, "LICENSE"), PREFIX + "/LICENSE"
+    yield os.path.join(ROOT, NOTICES), PREFIX + "/" + NOTICES
+
+
+def read_asset(src, asset_path):
+    """The bytes that go into the package for this file."""
+    with open(src, "rb") as f:
+        data = f.read()
+    if asset_path == PREFIX + "/Documentation/README.md":
+        lines = data.decode("utf-8").split("\n")
+        kept = [l for l in lines if not l.lstrip().startswith(("![", "[!["))]
+        text = "\n".join(kept)
+        text = text.replace("[MIT](LICENSE).", ASSET_STORE_LICENSE)
+        while "\n\n\n" in text:
+            text = text.replace("\n\n\n", "\n\n")
+        data = text.encode("utf-8")
+    return data
 
 
 def repo_meta(src_path):
@@ -128,8 +155,7 @@ def write_unitypackage(path):
         for asset_path, src, meta in entries():
             guid = guid_of(meta)
             if src is not None:
-                with open(src, "rb") as f:
-                    add_bytes(tar, guid + "/asset", f.read())
+                add_bytes(tar, guid + "/asset", read_asset(src, asset_path))
             add_bytes(tar, guid + "/asset.meta", meta.encode())
             add_bytes(tar, guid + "/pathname", asset_path.encode())
     with open(path, "wb") as f:
@@ -147,7 +173,8 @@ def write_project(project):
             os.makedirs(dest, exist_ok=True)
         else:
             os.makedirs(os.path.dirname(dest), exist_ok=True)
-            shutil.copyfile(src, dest)
+            with open(dest, "wb") as f:
+                f.write(read_asset(src, asset_path))
         with open(dest + ".meta", "w", encoding="utf-8", newline="\n") as f:
             f.write(meta)
 
