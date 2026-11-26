@@ -1,0 +1,50 @@
+Hibira Realtime - Third-Party Notices
+=====================================
+
+This file lists the third-party components included in this package and the
+licenses they are used under.
+
+Third-party components included
+-------------------------------
+
+None.
+
+Every file in this package (C# scripts, the WebGL .jslib plugin, the assembly
+definitions, the Lobby sample and the documentation) was written by Hibira.
+The package contains no third-party code, libraries, fonts, images, audio,
+models or other media.
+
+- JSON: the package uses its own JSON reader and writer (Runtime/Json.cs);
+  no third-party JSON library is included.
+- WebSocket: native platforms use System.Net.WebSockets.ClientWebSocket from
+  the .NET runtime that ships with Unity, and WebGL builds use the browser's
+  built-in WebSocket API through Runtime/Plugins/WebGL/HibiraWebSocket.jslib.
+  No third-party WebSocket library is included.
+- HTTP: auth requests use Unity's UnityWebRequest.
+
+The package depends on no other Unity packages.
+
+Online service
+--------------
+
+The package is a client for Hibira (https://hibira.io), a hosted realtime
+service, and for other servers that implement the Pusher Channels protocol.
+Using it with Hibira needs a Hibira account; the Free plan is enough to build
+and test. The package itself has no feature limits, license checks or DRM:
+every feature works the same whatever the account's plan.
+
+Trademarks
+----------
+
+"Pusher" and "Pusher Channels" are trademarks of their owner, and "Photon" and
+"PUN" are trademarks of Exit Games. They are named only to describe protocol
+compatibility and to help users move existing projects. This package includes
+no code from those products and is not affiliated with or endorsed by their
+owners.
+
+License of this package
+-----------------------
+
+The Asset Store copy of this package is licensed under the Unity Asset Store
+EULA. The same source code is also published by Hibira under the MIT License
+at https://github.com/hibira-io/unity.

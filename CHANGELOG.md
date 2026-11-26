@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1
+
+- Asset Store copy: adds `Third-Party Notices.txt` (the package has no
+  third-party components) and is covered by the Asset Store EULA instead of
+  shipping the MIT `LICENSE` file; the same source stays MIT on GitHub. The
+  bundled README no longer points at images that are not in the package.
+
 ## 0.3.0
 
 - `HibiraAuctionHouse`: follows an auction house published by

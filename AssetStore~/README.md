@@ -29,8 +29,17 @@ package itself still supports 2021.3, so list that as the lowest version.
    choose `Assets/Hibira`, run the validator, and upload.
 6. In the [Publisher Portal](https://publisher.unity.com/packages), fill in the
    draft with the text and images below, set the price to Free, and submit.
-   The publisher profile needs a Website (https://hibira.io) or the submit is
-   refused.
+   The publisher profile needs a Website or the submit is refused. Use
+   https://hibira.io: its landing page has no Buy Now or Add to Cart buttons
+   and no links to other marketplaces (Asset Store Content Transparency 1.7.2);
+   keep it that way.
+7. Hibira is an online service that needs an account, so the product must be
+   registered as a Verified Solution at https://create.unity.com/contact-vs
+   before the Asset Store accepts it. The package itself must keep having no
+   feature limits, license checks or DRM.
+
+Every upload needs `Third-Party Notices.txt` in the package (build.py adds it)
+and the third-party line in the description below.
 
 ## Later releases
 
@@ -84,6 +93,8 @@ Play mode would make a good fourth screenshot once one is taken in the Editor.
 
 **Supported Unity versions:** 2021.3 and later
 
+**Publisher website:** https://hibira.io
+
 **Keywords:** multiplayer, realtime, websocket, lobby, matchmaking, presence, chat, webgl, pusher, networking
 
 **Summary (short description):**
@@ -122,7 +133,9 @@ Documentation and source: https://github.com/hibira-io/unity
 • Plain C#, one assembly (Hibira.Realtime); no native plugins apart from a WebGL .jslib
 • Source code included
 • Documentation: Documentation/README.md in the package, and online at https://github.com/hibira-io/unity
-• License: MIT. The Asset Store EULA applies to the Asset Store copy, and the same code is also available under MIT on GitHub.
+• License: the Asset Store EULA applies to this copy. The same source is also published under the MIT License on GitHub.
+
+Third-party software: this package includes no third-party components. It uses its own JSON code and the WebSocket support built into .NET and the browser; see Third-Party Notices.txt in the package for details.
 
 If the package is already installed from git through the Package Manager, remove that copy before importing this one.
 
@@ -130,4 +143,4 @@ If the package is already installed from git through the Package Manager, remove
 
 ## 中文摘要
 
-這裡是把 Hibira Realtime 上架 Unity Asset Store（免費）所需的全部材料：`export.sh` 把套件複製成 Asset Store 要求的 `Assets/Hibira/Realtime` 結構；`images/` 有 icon、card、cover、social 圖與三張截圖，尺寸都符合 Publisher Portal 的要求；上方是可直接貼上的英文上架文案。上傳需要 Unity 2022.3 以上（套件本身仍支援 2021.3）。之後每次打 `v*` tag，CI 會用 `build.py` 直接產生 `.unitypackage` 並附到 GitHub Release，不需要 Unity 授權；只要在 Uploader 選 From .unitypackage 上傳，再到 Publisher Portal 送審。首次流程：開一個 Unity 2022.3 空專案，執行 `export.sh`，在 Editor 用 Asset Store Publishing Tools 上傳 `Assets/Hibira`，再到 Publisher Portal 填文案、上傳圖片並送審。上傳與送審需要在 Unity Editor 與 Publisher Portal 登入，只能由帳號擁有者操作。
+這裡是把 Hibira Realtime 上架 Unity Asset Store（免費）所需的全部材料：`export.sh` 把套件複製成 Asset Store 要求的 `Assets/Hibira/Realtime` 結構；`images/` 有 icon、card、cover、social 圖與三張截圖，尺寸都符合 Publisher Portal 的要求；上方是可直接貼上的英文上架文案。上傳需要 Unity 2022.3 以上（套件本身仍支援 2021.3）。之後每次打 `v*` tag，CI 會用 `build.py` 直接產生 `.unitypackage` 並附到 GitHub Release，不需要 Unity 授權；只要在 Uploader 選 From .unitypackage 上傳，再到 Publisher Portal 送審。首次流程：開一個 Unity 2022.3 空專案，執行 `export.sh`，在 Editor 用 Asset Store Publishing Tools 上傳 `Assets/Hibira`，再到 Publisher Portal 填文案、上傳圖片並送審。上傳與送審需要在 Unity Editor 與 Publisher Portal 登入，只能由帳號擁有者操作。套件內含 `Third-Party Notices.txt`（說明沒有第三方元件），描述末尾要保留對應的第三方授權說明；Asset Store 版不附 MIT LICENSE（改由 Asset Store EULA 涵蓋）。Hibira 是需要註冊帳號的線上服務，必須先在 https://create.unity.com/contact-vs 登記為 Verified Solution；套件本身不得有功能限制或 DRM。Publisher 網站用 https://hibira.io，首頁不能有購買按鈕或其他市集的連結。
